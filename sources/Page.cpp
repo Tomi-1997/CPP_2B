@@ -1,1 +1,2 @@
-// not much yet
+#include "Page.hpp"
+using namespace ariel;

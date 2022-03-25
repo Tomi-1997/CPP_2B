@@ -1,5 +1,6 @@
 #include "Direction.hpp"
 #include "Page.hpp" // has line and unordered map
+#include <string>
 
 namespace ariel
 {
@@ -7,14 +8,21 @@ namespace ariel
     {
         public:
 
-        std::unordered_map<int, Page> pages;
+        std::unordered_map<int, ariel::Page*> pages;
 
-        void write(int page, int row, int col, Direction dir, const std::string &word);
+        Notebook()
+        {
+            printf("Notebook init \n");
+            std::unordered_map<int, ariel::Page*> pages = {};
+        }
 
-	    std::string read(int page, int row, int col, Direction dir, int len);
+        void write(int page, int line, int col, Direction dir, const std::string &word, /* 0 for wite, 1 for erase */ bool writeCheck);
 
-        void erase(int page, int row, int col, Direction dir, int len);
+	    std::string read(int page, int line, int col, Direction dir, int len);
+
+        void erase(int page, int line, int col, Direction dir, int len);
 
         void show(int range);
+
     };
 }
