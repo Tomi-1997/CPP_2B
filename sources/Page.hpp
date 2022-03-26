@@ -6,11 +6,7 @@ namespace ariel
     class Page
     {
         public:
-        Page()
-        {
-            printf("Page init\n");
-            std::unordered_map<int, Line*> lines = {};
-        }
+        Page();
         std::unordered_map<int, Line*> lines;
 
     };

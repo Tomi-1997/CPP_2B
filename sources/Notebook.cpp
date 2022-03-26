@@ -1,6 +1,13 @@
 #include "Notebook.hpp"
-#include <stdexcept>
+#include <stdexcept> // To raise exception
+#include <ctype.h> // Check if character is printable 
 using namespace ariel;
+
+ariel::Notebook::Notebook()
+{
+	printf("Notebook init \n");
+	std::unordered_map<int, ariel::Page*> pages = {};
+}
 
 bool invalidIntegers(int p, int r, int c)
 {
@@ -11,7 +18,7 @@ bool invalidWriteable(const std::string &word)
 {
 	for (char const &c : word)
 		{
-			if (c == '~' || c == '\n' || c == '\t' || c == '\r')
+			if ( !isprint(c) || c == '~' || c == '\n' || c == '\t' || c == '\r')
 			{
 				return true;
 			}
@@ -19,9 +26,33 @@ bool invalidWriteable(const std::string &word)
 		return word.length() == 0;
 }
 
-void Notebook::write(int page, int line, int col, Direction dir, const std::string &word, bool writeCheck)
+/**
+ * @brief Default write(), will raise exception if overwriting occurs.
+ * 
+ * @param page 
+ * @param line 
+ * @param col 
+ * @param dir 
+ * @param word 
+ */
+void Notebook::write(int page, int line, int col, Direction dir, const std::string &word)
 {
-	if (invalidIntegers(page, line, col) || invalidWriteable(word))
+	write(page, line, col, dir, word, false);
+}
+
+/**
+ * @brief Writes given string, will raise exception if is called from default write() and tries to overwrite existing characters.
+ * 
+ * @param page 
+ * @param line 
+ * @param col 
+ * @param dir 
+ * @param word 
+ * @param isDelete 
+ */
+void Notebook::write(int page, int line, int col, Direction dir, const std::string &word, bool isDelete)
+{
+	if (invalidIntegers(page, line, col) || ( !isDelete && invalidWriteable(word)) )
 	{
 		throw std::invalid_argument("Invalid argument\\s.");
 	}
@@ -52,7 +83,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 		}
 
 		// Check if already written / deleted
-		if (current_page->lines[current_line]->line[col] != '_' && writeCheck)
+		if (current_page->lines[current_line]->line[col] != '_' && !isDelete)
 		{
 			throw std::runtime_error("Trying to overwrite.");
 		}
@@ -89,7 +120,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 			}
 
 			// Check if already written / deleted
-			if (current_page->lines[current_line]->line[current_place] != '_' && writeCheck)
+			if (current_page->lines[current_line]->line[current_place] != '_' && !isDelete)
 			{
 				throw std::runtime_error("Trying to overwrite.");
 			}
@@ -106,6 +137,16 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 
 }
 
+/**
+ * @brief Will read existing lines, and if needed initialize new lines and read them.
+ * 
+ * @param page 
+ * @param line 
+ * @param col 
+ * @param dir 
+ * @param len 
+ * @return std::string 
+ */
 std::string Notebook::read(int page, int line, int col, Direction dir, int len)
 {
 	if (invalidIntegers(page, line, col) || len < 0)
@@ -174,12 +215,30 @@ std::string Notebook::read(int page, int line, int col, Direction dir, int len)
 	return myAns;
 }
 
+/**
+ * @brief Calls write() with delete flag to mark '~' regardless of current written characters on given position.
+ * 
+ * @param page 
+ * @param line 
+ * @param col 
+ * @param dir 
+ * @param len 
+ */
 void Notebook::erase(int page, int line, int col, Direction dir, int len)
 {
 	if (invalidIntegers(page, line, col) || len < 0)
 	{
 		throw std::invalid_argument("Invalid argument\\s.");
 	}
+
+	std::string word;
+	for (int i = 0; i < len; i++)
+	{
+		word += '~';
+	}
+
+	write(page, line, col, dir, word, false);
+
 }
 
 void Notebook::show(int range)
