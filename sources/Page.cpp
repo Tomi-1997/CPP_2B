@@ -3,6 +3,6 @@ using namespace ariel;
 
 ariel::Page::Page()
 {
-    printf("Page init\n");
+    //printf("Page init\n");
     std::unordered_map<int, Line*> lines = {};
 }

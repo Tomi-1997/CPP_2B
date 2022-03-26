@@ -12,8 +12,7 @@ namespace ariel
 
         Notebook();
 
-
-        // Default write
+        // Calls write with flag to check for overwriting.
         void write(int page, int line, int col, Direction dir, const std::string &word);
 
         // Write / delete
@@ -21,10 +20,13 @@ namespace ariel
 
 	    std::string read(int page, int line, int col, Direction dir, int len);
 
-        // Calls write but with '~'
+        // Calls write but with '~' with no overwriting flag.
         void erase(int page, int line, int col, Direction dir, int len);
 
         void show(int range);
+
+        // Show all existing pages, and all existing lines.
+        void display();
 
     };
 }

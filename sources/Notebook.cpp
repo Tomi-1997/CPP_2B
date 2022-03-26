@@ -1,11 +1,12 @@
 #include "Notebook.hpp"
 #include <stdexcept> // To raise exception
 #include <ctype.h> // Check if character is printable 
+#include <iostream>
 using namespace ariel;
 
 ariel::Notebook::Notebook()
 {
-	printf("Notebook init \n");
+	//printf("Notebook init \n");
 	std::unordered_map<int, ariel::Page*> pages = {};
 }
 
@@ -41,7 +42,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 }
 
 /**
- * @brief Writes given string, will raise exception if is called from default write() and tries to overwrite existing characters.
+ * @brief Writes given string, will raise exception if is called from default write() while trying to overwrite existing characters.
  * 
  * @param page 
  * @param line 
@@ -91,7 +92,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 		// Write
 		for (char const &c : word)
 		{
-			printf("Writing\n");
+			//printf("Writing\n");
 			current_page->lines[current_line]->line[col] = c;
 			current_line++;
 		}
@@ -102,7 +103,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 		// Check how many lines needed for this write
 		// If requested line \ overflowing lines from writing does not exist yet, initalize it.
 		int lines_needed = ( (col + word_len) / 100 ) + 1;
-		std::printf("lines needed: %d\n",lines_needed);
+		//printf("lines needed: %d\n",lines_needed);
 		for (int l = 0; l < lines_needed ; l++)
 		{
 			if ( !current_page->lines.contains(line + l) )
@@ -125,15 +126,15 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 				throw std::runtime_error("Trying to overwrite.");
 			}
 			// In current page, in current line, in current place, change character.
-			printf("Writing\n");
+			//printf("Writing\n");
 			current_page->lines[current_line]->line[current_place] = c;
 			current_place++;
 		}
 
 	}
 
-	printf("current notebook has this many pages: %lu\n", pages.size());
-	printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
+	//printf("current notebook has this many pages: %lu\n", pages.size());
+	//printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
 
 }
 
@@ -168,20 +169,20 @@ std::string Notebook::read(int page, int line, int col, Direction dir, int len)
 
 	if ( !pages.contains(page) )
 	{
-		printf("read() new page \n");
+		//printf("read() new page \n");
 		pages[page] = new ariel::Page();
 	}
 	ariel::Page* current_page = pages[page];
 
-	printf("current notebook has this many pages: %lu\n", pages.size());
-	printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
+	// printf("current notebook has this many pages: %lu\n", pages.size());
+	// printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
 
 	for (int i = 0; i < lines_to_read; i++)
 	{
 		if ( current_page->lines.contains(line + i) == false )
 		{
 			current_page->lines[line + i] = new ariel::Line();
-			printf("%d, read() new line \n", i);
+			//printf("%d, read() new line \n", i);
 		}
 	}
 
@@ -237,7 +238,7 @@ void Notebook::erase(int page, int line, int col, Direction dir, int len)
 		word += '~';
 	}
 
-	write(page, line, col, dir, word, false);
+	write(page, line, col, dir, word, true);
 
 }
 
@@ -247,7 +248,32 @@ void Notebook::show(int range)
 	{
 		throw std::invalid_argument("Invalid argument\\s.");
 	}
+
+	display();
 }
 
+void Notebook::display()
+{
+	std::string dis;
+	for (auto& page : pages)
+	{
+		std::string page_headline = "----- PAGE ";
+		page_headline += std::to_string(page.first);
+		page_headline += " -----\n";
+
+		ariel::Page* current_page = page.second;
+		for (auto& line : current_page->lines)
+		{
+			std::string line_headline = "[LINE " + std::to_string(line.first) + "]";
+			line_headline += line.second->line;
+			line_headline += "\n";
+			dis.insert(0, line_headline);
+		}
+
+		dis.insert(0, page_headline);
+	}
+
+	std::cout << dis << std::endl;
+}
 
 
