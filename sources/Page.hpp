@@ -1,5 +1,5 @@
 #include "Line.hpp"
-#include <unordered_map>
+#include <map>
 
 namespace ariel 
 {
@@ -7,7 +7,7 @@ namespace ariel
     {
         public:
         Page();
-        std::unordered_map<int, Line*> lines;
+        std::map<int, Line*> lines;
 
     };
 }

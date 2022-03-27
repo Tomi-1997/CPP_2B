@@ -9,7 +9,7 @@ namespace ariel
         public:
 
         // reference https://en.cppreference.com/w/cpp/container/unordered_map
-        std::unordered_map<int, ariel::Page*> pages;
+        std::map<int, ariel::Page*> pages;
 
         Notebook();
         ~Notebook();

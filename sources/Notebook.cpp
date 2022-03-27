@@ -7,14 +7,12 @@ using namespace ariel;
 constexpr int LAST_VALID_INDEX = 99;
 constexpr int INVALID_INDEX = 100;
 
-// #define LAST_VALID_INDEX 99
-// #define INVALID_INDEX 100
-
 ariel::Notebook::Notebook()
 {
 	// printf("Notebook init \n");
 	// reference https://en.cppreference.com/w/cpp/container/unordered_map
-	std::unordered_map<int, ariel::Page*> pages = {};
+	// and then changed to https://en.cppreference.com/w/cpp/container/map to conserve key ordering
+	std::map<int, ariel::Page*> pages = {};
 }
 
 ariel::Notebook::~Notebook()
@@ -31,16 +29,18 @@ ariel::Notebook::~Notebook()
 	}
 }
 
+// Check for negative input
 bool invalidIntegers(int p, int r, int c)
 {
 	return p < 0 || r < 0 || c < 0;
 }
 
+// Check for invalid character input
 bool invalidWriteable(const std::string &word)
 {
 	for (char const &c : word)
 		{
-			if ( isprint(c) == 0 || c == '~' || c == '\n' || c == '\t' || c == '\r')
+			if ( isprint(c) == 0 || c == '~')
 			{
 				return true;
 			}
@@ -49,7 +49,9 @@ bool invalidWriteable(const std::string &word)
 }
 
 /**
- * @brief Default write(), will raise exception if overwriting occurs.
+ * @brief Default write(), will raise exception for:
+ * ♥ Overwriting.
+ * ♥ Horizontal writing spills over next line.
  * 
  * @param page 
  * @param line 
@@ -63,7 +65,7 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 }
 
 /**
- * @brief Writes given string, will raise exception if is called from default write() while trying to overwrite existing characters.
+ * @brief Writes given string.
  * 
  * @param page 
  * @param line 
@@ -108,7 +110,6 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 			}
 		}
 
-
 		// Write
 		for (char const &c : word)
 		{
@@ -127,26 +128,13 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 
 	if (dir == ariel::Direction::Horizontal)
 	{
-		// Check how many lines needed for this write
-		// // If requested line \ overflowing lines from writing does not exist yet, initalize it.
-		// int lines_needed = ( (col + word_len) / (last_index+1) ) + 1;
-		// //printf("lines needed: %d\n",lines_needed);
-		// for (int l = 0; l < lines_needed ; l++)
-		// {
 		if ( !current_page->lines.contains(line) )
 		{
 			current_page->lines[line] = new ariel::Line();
 		}
-		// }
 
 		for (char const &c : word)
 		{
-			if (current_place == INVALID_INDEX)
-			{
-				current_line++;
-				current_place = 0;
-			}
-
 			// Check if already written / deleted
 			if (current_page->lines[current_line]->char_line.at(current_place) != '_' && !isDelete)
 			{
@@ -235,13 +223,6 @@ std::string Notebook::read(int page, int line, int col, Direction dir, int len)
 		if (dir == ariel::Direction::Horizontal)
 		{
 			current_place++;
-			// if (current_place == last_index)
-			// {
-			// 	//myAns += "\n";
-			// 	current_line_ind++;
-			// 	current_line = current_page->lines[current_line_ind]->line;
-			// 	current_place = 0;
-			// }
 		}
 		else
 		{
@@ -269,7 +250,7 @@ void Notebook::erase(int page, int line, int col, Direction dir, int len)
 
 	if (dir == ariel::Direction::Horizontal && col + len > LAST_VALID_INDEX)
 	{
-		throw std::invalid_argument("invaid read() length");
+		throw std::invalid_argument("invaid erase() length");
 	}
 
 	std::string word;
@@ -300,6 +281,7 @@ void Notebook::display()
 		std::string page_headline = "----- PAGE ";
 		page_headline += std::to_string(page.first);
 		page_headline += " -----\n";
+		dis += page_headline;
 
 		ariel::Page* current_page = page.second;
 		for (auto& line : current_page->lines)
@@ -311,10 +293,8 @@ void Notebook::display()
 				line_headline += c;
 			}
 			line_headline += "\n";
-			dis.insert(0, line_headline);
+			dis += line_headline;
 		}
-
-		dis.insert(0, page_headline);
 	}
 
 	std::cout << dis << std::endl;
