@@ -1,9 +1,7 @@
 #include "Line.hpp"
-ariel::Line::Line()
+
+ariel::Line::Line() : char_line() // Init array of '_'
 {
     //printf("Line init\n");
-    for (int i = 0; i < LINE_VER_LEN; i++)
-    {
-        line[i] = '_';
-    }
+    char_line.fill('_');
 }

@@ -8,15 +8,17 @@ namespace ariel
     {
         public:
 
+        // reference https://en.cppreference.com/w/cpp/container/unordered_map
         std::unordered_map<int, ariel::Page*> pages;
 
         Notebook();
+        ~Notebook();
 
         // Calls write with flag to check for overwriting.
         void write(int page, int line, int col, Direction dir, const std::string &word);
 
         // Write / delete
-        void write(int page, int line, int col, Direction dir, const std::string &word, /* 0 for wite, 1 for erase */ bool writeCheck);
+        void write(int page, int line, int col, Direction dir, const std::string &word, /* 0 for wite, 1 for erase */ bool isDelete);
 
 	    std::string read(int page, int line, int col, Direction dir, int len);
 
