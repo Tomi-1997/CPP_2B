@@ -17,7 +17,6 @@ ariel::Notebook::Notebook()
 
 ariel::Notebook::~Notebook()
 {
-	//printf("Notebook delete \n");
 	for (auto& page : pages)
 	{
 		ariel::Page* current_page = page.second;
@@ -92,13 +91,11 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 	{
 		pages[page] = new ariel::Page();
 	}
-	//printf("pages now: %lu\n", pages.size());
 
 	ariel::Page* current_page = pages[page];
 	int current_line = line;
 	size_t current_place = (size_t) col;
 
-	//printf("pages now: %lu\n", pages.size());
 	if (dir == ariel::Direction::Vertical)
 	{
 		// Check how many lines needed, for vertical, num of lines needed is the same as the length of the word.
@@ -120,7 +117,6 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 				throw std::runtime_error("Trying to overwrite.");
 			}
 
-			//printf("Writing\n");
 			current_page->lines[current_line]->char_line.at(current_place) = c;
 			current_line++;
 		}
@@ -147,10 +143,6 @@ void Notebook::write(int page, int line, int col, Direction dir, const std::stri
 		}
 
 	}
-
-	//printf("current notebook has this many pages: %lu\n", pages.size());
-	//printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
-
 }
 
 /**
@@ -185,18 +177,10 @@ std::string Notebook::read(int page, int line, int col, Direction dir, int len)
 
 	if ( !pages.contains(page) )
 	{
-		//printf("read() new page \n");
 		pages[page] = new ariel::Page();
-
-
-		// Fixed to match testing
-		//throw std::invalid_argument("Nonexistent page read at read()");
 	}
+	
 	ariel::Page* current_page = pages[page];
-
-	// printf("current notebook has this many pages: %lu\n", pages.size());
-	// printf("current page: %d has this many lines: %lu\n", page, current_page->lines.size());
-
 	for (int i = 0; i < lines_to_read; i++)
 	{
 		if ( !current_page->lines.contains(line + i) )
